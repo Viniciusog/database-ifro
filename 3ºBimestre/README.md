@@ -1,6 +1,7 @@
 ## Links das Aulas
 
 1. **Gatilhos - Conceitos e prática:**
+
    [https://www.youtube.com/watch?v=w3hiLomNiWk](https://www.youtube.com/watch?v=w3hiLomNiWk)
 
 2. **Correção de Exercícios - Material 05 - Gatilhos**
