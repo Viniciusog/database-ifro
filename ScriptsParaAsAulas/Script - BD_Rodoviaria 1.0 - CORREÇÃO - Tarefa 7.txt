@@ -1,0 +1,621 @@
+#NOME COMPLETO:_________________________________________
+
+create database bd_Imperio_Professor;
+use bd_Imperio_Professor;
+
+create table Estado (
+cod_est int not null primary key auto_increment,
+nome_est varchar (200) not null,
+sigla_est varchar (2)
+);
+
+create table Cidade (
+cod_cid int not null primary key auto_increment,
+nome_cid varchar (200) not null,
+cod_est int,
+foreign key (cod_est) references Estado (cod_est)
+);
+
+create table Endereço (
+cod_end integer not null primary key auto_increment,
+rua_end varchar (300) not null,
+numero_end integer,
+bairro_end varchar (100),
+cep_end varchar (100),
+cod_cid int not null,
+foreign key (cod_cid) references Cidade (cod_cid)
+); 
+
+create table Sexo (
+cod_sex int not null primary key auto_increment,
+nome_sex varchar (100) not null
+);
+
+create table Telefone (
+cod_tel int not null primary key auto_increment,
+celular_tel varchar (100),
+casa_tel varchar (100),
+trabalho_tel varchar (100)
+);
+
+create table Cliente (
+cod_cli integer not null primary key auto_increment,
+nome_cli varchar (200) not null,
+estadocivil_cli varchar (50),
+cpf_cli varchar (20) not null,
+rg_cli varchar (30),
+datanasc_cli date,
+cod_sex integer not null,
+cod_end integer not null,
+cod_tel integer not null,
+foreign key (cod_sex) references Sexo (cod_sex),
+foreign key (cod_end) references Endereço (cod_end),
+foreign key (cod_tel) references Telefone (cod_tel)
+);
+
+create table Departamento (
+cod_dep integer not null primary key auto_increment,
+nome_dep varchar (100),
+descrição_dep varchar (300)
+);
+
+create table Funcionario (
+cod_func integer not null primary key auto_increment,
+nome_func varchar (200) not null,
+cpf_func varchar (20) not null,
+rg_func varchar (20),
+datanasc_func date,
+salário_func double not null,
+função_func varchar (50) not null,
+cod_sex integer not null,
+cod_dep integer not null,
+cod_end integer not null,
+cod_tel integer not null,
+foreign key (cod_sex) references Sexo (cod_sex),
+foreign key (cod_dep) references Departamento (cod_dep),
+foreign key (cod_end) references Endereço (cod_end),
+foreign key (cod_tel) references Telefone (cod_tel)
+);
+
+create table onibus (
+cod_oni integer not null primary key auto_increment,
+modelo_oni varchar (100) not null,
+marca_oni varchar (100),
+placa_oni varchar (50),
+tipo_oni varchar (100)
+);
+
+create table Poltrona(
+cod_pol integer not null primary key auto_increment,
+número_pol integer not null,
+situação_pol varchar (100) not null,
+cod_oni integer not null,
+foreign key (cod_oni) references Onibus (cod_oni)
+);
+
+create table Trecho_Viagem (
+cod_tre integer not null primary key auto_increment,
+data_part_tre date not null,
+data_cheg_tre date not null,
+horário_part_tre time not null,
+horário_cheg_tre time not null,
+distancia_tre float,
+tarifa_tre float,
+cod_cid_origem int not null,
+cod_cid_destino int not null,
+cod_oni int not null,
+foreign key (cod_cid_origem) references Cidade (cod_cid),
+foreign key (cod_cid_destino) references Cidade (cod_cid),
+foreign key (cod_oni) references Onibus (cod_oni)
+);
+
+create table Passagem (
+cod_pas integer not null primary key auto_increment,
+data_pas date,
+valor_pas float,
+cod_cli integer not null,
+cod_func integer not null,
+cod_tre integer not null,
+poltrona_pas integer,
+foreign key (cod_cli) references Cliente (cod_cli),
+foreign key (cod_func) references Funcionario (cod_func),
+foreign key (cod_tre) references Trecho_Viagem (cod_tre)
+);
+
+create table Caixa (
+cod_caixa integer not null primary key auto_increment,
+dataabertura_caixa date not null,
+datafechamento_caixa date,
+saldoinicial_caixa double not null,
+valorcréditos_caixa double,
+valordébitos_caixa double,
+saldofinal_caixa double,
+cod_func int not null,
+foreign key (cod_func) references Funcionario (cod_func)
+);
+
+create table Recebimentos (
+cod_receb integer not null primary key auto_increment,
+data_receb date,
+valor_receb double,
+formapag_receb varchar (100),
+cod_caixa integer not null,
+cod_pas integer not null,
+foreign key (cod_caixa) references Caixa (cod_caixa),
+foreign key (cod_pas) references Passagem (cod_pas)
+);
+
+#INICIE A PARTIR DAQUI SUA LISTA DE EXERCÍCIOS
+#01
+delimiter $$
+create procedure inserirEstado (nome varchar (100), sigla varchar (5))
+begin
+declare testenome varchar (100);
+
+set testenome = (select nome_est from estado where (nome_est = nome));
+
+if (testenome is null) then
+	insert into estado values (null, nome, sigla);
+	select concat('O Estado ', nome, ' foi inserido com sucesso!') as Confirmacao;
+else
+	select concat('O nome do Estado ', nome, ' digitado já existe! Favor informar outro nome!') as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirEstado ('Acre', 'AC');
+call inserirEstado ('Alagoas', 'AL');
+call inserirEstado ('Amapá','AP');
+call inserirEstado ('Amazonas','AM');
+call inserirEstado ('Bahia','BA');
+call inserirEstado ('Ceara','CE');
+call inserirEstado ('Distrito Federal','DF');
+call inserirEstado ('Espírito Santo','ES');
+call inserirEstado ('Goiás','GO');
+call inserirEstado ('Maranhão','MA');
+call inserirEstado ('Mato Grosso','MT');
+call inserirEstado ('Mato Grosso do Sul','MS');
+call inserirEstado ('Minas Gerais','MG');
+call inserirEstado ('Pará','PA');
+call inserirEstado ('Paraíba','PB');
+call inserirEstado ('Paraná','PR');
+call inserirEstado ('Pernambuco','PE');
+call inserirEstado ('Piauí','PI');
+call inserirEstado ('Rio de Janeiro','RJ');
+call inserirEstado ('Rio Grande do Norte','RN');
+call inserirEstado ('Rio Grande do Sul','RS');
+call inserirEstado ('Rondônia','RO');
+call inserirEstado ('Roraima','RR');
+call inserirEstado ('Santa Catarina','SC');
+call inserirEstado ('São Paulo','SP');
+call inserirEstado ('Sergipe','SE');
+call inserirEstado ('Tocantins','TO');
+
+#02
+delimiter $$
+create procedure inserirCidade (nome varchar (100), estado int)
+begin
+declare testenome varchar (100);
+declare testeestado int;
+
+set testeestado = (select cod_est from estado where (cod_est = estado));
+set testenome = (select nome_cid from cidade where (nome_cid = nome));
+
+if (testeestado is not null) then
+	if (testenome is null) then
+		insert into cidade values (null, nome, estado);
+        select concat('A cidade ', nome, ' foi inserida com sucesso!') as Confirmacao;
+	else
+		select 'O nome da cidade digitada já existe! Favor informar outro nome!' as Alerta;
+	end if;
+else
+	select 'O código do estado informando não existe! Favor informar outro código!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirCidade ('Ji-Paraná', 22);
+call inserirCidade ('Ariquemes', 22);
+call inserirCidade ('Porto Velho', 22);
+call inserirCidade ('Guajará-Mirim', 22);
+call inserirCidade ('Candeias do Jamari', 22);
+call inserirCidade ('Jaru', 22);
+call inserirCidade ('Ouro Preto', 22);
+call inserirCidade ('Cacoal', 22);
+call inserirCidade ('Pimenta Bueno', 22);
+call inserirCidade ('Vilhena', 22);
+call inserirCidade ('Cuiaba', 11);
+call inserirCidade ('Sinop', 11);
+call inserirCidade ('Rondonopolis', 11);
+call inserirCidade ('Rio Branco', 1);
+call inserirCidade ('Cruzeiro do Sul', 1);
+call inserirCidade ('Manaus', 4);
+call inserirCidade ('Rio Negro', 4);
+call inserirCidade ('Campo Grande', 12);
+call inserirCidade ('Dourados', 12);
+
+#03
+select * from endereço;
+delimiter $$
+create procedure inserirEndereco (rua varchar (100), numero int, bairro varchar (100), cep varchar (100), cidade int)
+begin
+declare testecidade int;
+
+set testecidade = (select cod_cid from cidade where (cod_cid = cidade));
+
+if (testecidade is not null) then
+	insert into endereço values (null, rua, numero, bairro, cep, cidade);
+    select concat('O endereço com rua ', rua, ' foi inserido com sucesso!') as Confirmacao;
+else
+	select 'O código da cidade informada não existe! Favor informar outro código!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirEndereco ('Av. Brasil', 111, 'Nova Brasília', '76900-800', 1);
+call inserirEndereco ('Av. Marechal Rondon', 1245, 'Centro','76900-807', 1);
+call inserirEndereco ('Rua Dr. Telma Rios', 1174, 'Colina Park I','76900-809', 1);
+call inserirEndereco ('Av. Aracaju', 911, 'BNH', '76900-805', 1);
+call inserirEndereco ('Rua 07 de Setembro', 121,'Centro', '76900-807', 3);
+call inserirEndereco ('Rua Mato Grosso', 887, 'Dom Bosco','76900-807', 2);
+call inserirEndereco ('Av. Jorge Teixeira', 1589, 'Centro', '76900-807', 3);
+call inserirEndereco ('Av. Paulista', 989, 'Centro','72900-807', 16);
+call inserirEndereco ('Travessa dos Mineiros', 456, 'Centro', '77900-807', 18);
+call inserirEndereco ('Av. Monte Castelo', 555, 'Jardim dos Migrantes', '76900-807', 1);
+call inserirEndereco ('Av. Aracaju', 5111, 'Nova Brasilia', '74900-807', 11);
+call inserirEndereco ('Av. Monte Castelo', 9999, 'Jardim dos Migrantes', '76900-807', 1);
+call inserirEndereco ('Rua X', 12, 'Jardim dos Migrantes', '76900-500', 1);
+call inserirEndereco ('K-0', 522, 'São Francisco', '78900-807', 1);
+call inserirEndereco ('Av. Monte Castelo', 11229, 'Jardim dos Migrantes','76900-807', 7);
+
+#04
+delimiter $$
+create procedure inserirSexo (nome varchar (100))
+begin
+declare testenome varchar (100);
+
+set testenome = (select nome_sex from sexo where (nome_sex = nome));
+
+if (nome  <> '') then
+	if (testenome is null) then
+		insert into sexo values (null, nome);
+        select concat('O sexo ', nome, ' foi inserido com sucesso!') as Confirmacao;
+	else
+		select concat('O sexo ', nome, ' já existe! Favor informar outro nome!') as Alerta;
+	end if;
+else
+	select 'O nome do sexo não pode ser vazio!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirSexo ('Masculino');
+call inserirSexo ('Feminino');
+
+#05
+delimiter $$
+create procedure inserirTelefone (celular varchar (100), casa varchar (100), trabalho varchar (100))
+begin
+if (celular <> '') then
+	insert into telefone values (null, celular, casa, trabalho);
+    select 'O telefone foi inserido com sucesso!' as Confirmacao;
+else
+	select 'O campo celular é obrigatório e não pode estar vazio!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirTelefone ('98408 5712', '', '2122 2355');
+call inserirTelefone ('98122 4477', '3421 1155', '2122 2355');
+call inserirTelefone ('99981 7788', '', '2122 2355');
+call inserirTelefone ('98455 5555', '3421 4488', '');
+call inserirTelefone ('98877 8877', '3423 5577', '');
+
+#06
+delimiter $$
+create procedure inserirCliente (nome varchar (100), civil varchar (100), cpf varchar (100),
+rg varchar (100), nasc date, sexo int, endereco int, telefone int)
+begin
+declare testesexo, testeendereco, testetelefone int;
+
+set testesexo = (select cod_sex from sexo where (cod_sex = sexo));
+set testeendereco = (select cod_end from endereço where (cod_end = endereco));
+set testetelefone = (select cod_tel from telefone where (cod_tel = telefone));
+
+if (testeendereco is not null) then
+	if (testesexo is not null) then
+		if (testetelefone is not null) then
+			insert into cliente values (null, nome, civil, cpf, rg, nasc, sexo, endereco, telefone);
+            select concat('O cliente ', nome, ' foi inserido com sucesso!') as Confirmacao;
+		else
+			select 'O código do telefone informado não existe! Favor informar outro código!' as Alerta;
+		end if;
+	else
+		select 'O código do sexo informado não existe! Favor informar outro código!' as Alerta;
+	end if;
+else
+	select 'O código do endereço informado não existe! Favor informar outro código!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirCliente ('José Pereira da Silva', 'Casado', '222.222.222-88', '8888888 spp',  '1990-11-12', 1, 4, 1);
+call inserirCliente ('Maria de Jesus dos Santos', 'Solteira', '554.454.444-99', '99999 sesdec',  '1993-06-21', 2, 7, 2);
+call inserirCliente ('Camila de Oliveira', 'Casada', '987.123.654-55', '8889999 sesdec',  '2000-12-12', 2, 9, 3);
+call inserirCliente ('Marcos Araujo de Souza', 'Casado', '654.789.123-88', '998877 sesdec',  '1970-01-01', 1, 6, 4);
+call inserirCliente ('Cleiton Batista Ferraz', 'Solteiro', '321.111.222-44', '1234312 sesdec',  '1982-07-30', 1, 10, 5);
+
+#07
+delimiter $$
+create procedure inserirDepartamento (nome varchar (100), descricao varchar(100))
+begin
+if (nome <> '') then
+	if (descricao <> '') then
+		insert into departamento values (null, nome, descricao);
+        select concat('O departamento ', nome, ' foi inserido com sucesso!') as Confirmacao;
+	else
+		select 'O campo descrição não pode ser vazio!' as Alerta;
+	end if;
+else
+	select 'O campo nome não pode ser vazio!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirDepartamento ('Vendas de Passagens', 'Vendas de passagens nos terminais');
+call inserirDepartamento ('Financeiro', 'Controla o financeiro da empresa');
+call inserirDepartamento ('Controle de Trafego', 'Controle dos motoristas e onibus');
+call inserirDepartamento ('Administrativo', 'Controle administrativo');
+call inserirDepartamento ('Manutenção de Veiculos', 'Conserto de onibus');
+
+#07
+delimiter $$
+create procedure inserirFuncionario (nome varchar (100), cpf varchar (100), rg varchar (100), nasc date,
+salario float, funcao varchar (100), sexo int, departamento int, endereco int, telefone int)
+begin
+declare testesexo, testeendereco, testetelefone, testedepartamento int;
+
+set testesexo = (select cod_sex from sexo where (cod_sex = sexo));
+set testeendereco = (select cod_end from endereço where (cod_end = endereco));
+set testetelefone = (select cod_tel from telefone where (cod_tel = telefone));
+set testedepartamento = (select cod_dep from departamento where (cod_dep = departamento));
+
+if (testeendereco is not null) then
+	if (testesexo is not null) then
+		if (testetelefone is not null) then
+			if (testedepartamento is not null) then
+				if (funcao like '%vendedor%') and (departamento = 1) then
+					insert into funcionario values (null, nome, cpf, rg, nasc, salario, funcao, sexo, 
+                    departamento, endereco, telefone);
+                    select concat('O vendedor (a) ', nome, ' foi inserido com sucesso!') as Confirmacao;
+				else
+					if ((funcao <> 'Vendedor') and (funcao <> 'Vendedora')) then
+						insert into funcionario values (null, nome, cpf, rg, nasc, salario, funcao, sexo, 
+						departamento, endereco, telefone);
+						select concat('O funcionario ', nome, ' foi inserido com sucesso!') as Confirmacao;
+					else
+						select 'O Vendedor ou Vendedora só pode ser inserido no Departamento 1 de Vendas' as Alerta;
+					end if;
+				end if;
+			else
+				select 'O código de departamento informado não existe! Favor informar um código valido!' as Alerta;
+			end if;
+		else
+			select 'O código de telefone informado não existe! Favor informar um código valido!' as Alerta;
+		end if;
+	else
+		select 'O código de sexo informado não existe! Favor informar um código valido!' as Alerta;
+	end if;
+else
+	select 'O código de endereço informado não existe! Favor informar um código valido!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirFuncionario ('João Batista', '123.544.22311-99', '22222 sesdec', '1988-10-30', 5000.00, 'Vendedor', 1, 1, 1, 1);
+call inserirFuncionario ('Maria da Silva Marques', '551.897.789-15', '25458 sesdec', '1990-10-10', 1500.00, 'Vendedora', 2, 1, 3, 2);
+call inserirFuncionario ('Rui Marques de Souza', '554.888.444-20', '1234569 sesdec', '1978-01-10', 4200.00, 'Administrador', 1, 1, 1, 3);
+call inserirFuncionario ('Victor Buenro', '978.544.22311-99', '28882222 sesdec', '1998-05-30', 3000.00, 'Mecanico', 1, 5, 1, 4);
+call inserirFuncionario ('Mariza Alves', '128.504.22311-99', '222213 sesdec', '1995-10-10', 2000.00, 'Auxiliar de Financas', 2, 2, 1, 5);
+
+#09
+delimiter $$
+create procedure inserirOnibus (modelo varchar (100), marca varchar (100), placa varchar (100), tipo varchar (100))
+begin
+if (modelo = 'Amazon Bus Premium') and (tipo = 'Executive') then
+	insert into onibus values (null, modelo, marca, placa, tipo);
+    select concat('O onibus ', modelo, ' foi inserido com sucesso!') as Confirmacao;
+else
+	if (modelo = 'Amazon Bus Leito') and (tipo = 'Confort') then 
+		insert into onibus values (null, modelo, marca, placa, tipo);
+		select concat('O onibus ', modelo, ' foi inserido com sucesso!') as Confirmacao;   
+	else
+		select 'O modelo e tipo informado não correspondem a regra de negócio!' as Alerta;
+	end if;
+end if;
+end;
+$$ delimiter ;
+
+call inserirOnibus ('Amazon Bus Premium', 'Neobus', 'NDP-4898', 'Executive');
+call inserirOnibus ('Amazon Bus Premium', 'Neobus', 'EDP-9988', 'Executive');
+call inserirOnibus ('Amazon Bus Leito', 'Marcopolo', 'NPO-2188', 'Confort');
+call inserirOnibus ('Amazon Bus Leito', 'Marcopolo', 'IOP-1187', 'Confort');
+call inserirOnibus ('Amazon Bus Premium', 'Marcopolo', 'URU-2999', 'Executive');
+
+#10
+delimiter $$
+create procedure inserirPoltrona (onibus int)
+begin
+declare tipo varchar (100);
+declare controle int;
+
+set controle = 1;
+set tipo = (select tipo_oni from onibus where (cod_oni = onibus));
+
+if (tipo = 'Executive') then
+	while (controle <= 48) do
+		insert into poltrona values (null, controle, 'Livre', onibus);
+		select concat('A poltrona ', controle, ' foi inserida!') as Confirmacao;
+        set controle = controle + 1;  
+    end while;
+else
+	if (tipo = 'Confort') then
+		while (controle <= 58) do
+			insert into poltrona values (null, controle, 'Livre', onibus);
+            select concat('A poltrona ', controle, ' foi inserida!') as Confirmacao;
+			set controle = controle + 1;  
+		end while;
+	else
+		select 'Inserida um tipo de onibus valido!' as Alerta;
+	end if;
+end if;
+
+end;
+$$ delimiter ;
+
+call inserirPoltrona (1);
+call inserirPoltrona (2);
+call inserirPoltrona (3);
+call inserirPoltrona (4);
+call inserirPoltrona (5);
+
+select * from trecho_viagem;
+#11
+delimiter $$
+create procedure inserirTrecho (datapartida date, datachegada date, horapartida time, horachegada time,
+distancia float, origem int, destino int, onibus int)
+begin 
+declare tarifa float;
+
+if (distancia < 50) then
+	set tarifa = 3;
+else
+	if (distancia >= 50) and (distancia < 200) then
+		set tarifa = 5;
+	else
+		set tarifa = 10;
+	end if;
+end if;
+
+if ((select count(cod_pol) from poltrona 
+where (situação_pol <> 'Livre') and (cod_oni = onibus))	= 0) then
+	if (origem <> destino) then
+		if (datachegada >= datapartida) then
+			insert into trecho_viagem values (null, datapartida, datachegada, horapartida, 
+            horachegada, distancia, tarifa, origem, destino, onibus);
+            select 'O trecho foi inserido com sucesso!' as Confirmacao;
+		else
+			select 'A data de chegada não pode ser menor ou igual que a data de partida! Verique!' as Alerta;
+		end if;
+	else
+		select 'A cidade de origem não pode ser igual a cidade de destino! Verifique!' as Alerta;
+	end if;
+else
+	select 'O onibus informado não possui todas as poltronas Livres! Verifique!' as Alerta;
+end if;
+
+end;
+$$ delimiter ;
+
+call inserirTrecho ('2020-05-04', '2020-05-05', '08:00:00', '12:00:00', 300, 1, 2, 1);
+
+#12
+delimiter $$
+create procedure inserirPassagem (datapassagem date, cliente int, funcionario int, trecho int)
+begin
+declare tarifa, distancia, valor float;
+declare datapartida date;
+declare testetrecho int;
+
+set tarifa = (select tarifa_tre from trecho_viagem where cod_tre = trecho);
+set distancia = (select distancia_tre from trecho_viagem where cod_tre = trecho);
+set datapartida = (select data_cheg_tre from trecho_viagem where cod_tre = trecho);
+set testetrecho = (select cod_tre from trecho_viagem where cod_tre = trecho);
+
+set valor = tarifa * distancia;
+
+if (testetrecho is not null) then
+	if (datapartida >= datapassagem) then
+		insert into passagem values (null, datapassagem, valor, cliente, funcionario,
+        trecho, null);
+        select 'A passagem foi criada com sucesso!' as Confirmacao;
+	else
+		select 'A data da partida precisa ser maior ou igual que a data da passagem! Verifique!' as Alerta;
+	end if;
+else
+	select 'O trecho informado não existe! Verifique!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+
+call inserirPassagem ('2020-05-01', 1, 1, 1);
+
+#13
+delimiter $$
+create procedure marcarPoltrona (passagem int, numero int)
+begin
+declare trecho, onibus int;
+declare situacao varchar (100);
+
+set trecho = (select cod_tre from passagem where cod_pas = passagem);
+set onibus = (select cod_oni from trecho_viagem where cod_tre = trecho);
+set situacao = (select situação_pol from poltrona where (cod_oni = onibus) and (número_pol = numero));
+
+if (situacao = 'Livre') then
+	update poltrona set situação_pol = 'Ocupado' where (cod_oni = onibus) and (número_pol = numero);
+    update passagem set poltrona_pas = numero where (cod_pas = passagem);
+    select 'A poltrona foi marcada com sucesso!' as Confirmacao;
+else
+	select concat('A poltrona ', numero, ' já está ocupada! Escolha outra!') as Alerta;
+    select número_pol as 'Poltronas Livres' from poltrona where (situação_pol = 'Livre') and (cod_oni = onibus);
+end if;    
+
+end;
+$$ delimiter ;
+
+call marcarPoltrona (1, 32);
+
+#14 
+delimiter $$
+create procedure inserirCaixa (funcionario int, dataabertura date)
+begin
+declare funcao varchar (100);
+set funcao = (select função_func from funcionario where (cod_func = funcionario));
+
+if (funcao like 'vendedor%') then
+	insert into caixa values (null, dataabertura, null, 0, 0, 0, 0, funcionario);
+    select 'O caixa foi criado com sucesso!' as Confirmacao;
+else
+	select 'O funcionário informado não é vendedor! Verifique!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirCaixa (1, '2020-05-04');
+
+#15
+delimiter $$
+create procedure inserirRecebimento (passagem int, caixa int, forma varchar (100))
+begin
+declare valorpassagem float;
+declare datapassagem, datafechamento date;
+
+set valorpassagem = (select valor_pas from passagem where (cod_pas = passagem));
+set datapassagem = (select data_pas from passagem where (cod_pas = passagem));
+set datafechamento = (select datafechamento_caixa from caixa where (cod_caixa = caixa));
+
+if (datapassagem <> curdate()) then
+	set valorpassagem = valorpassagem * 1.05;
+end if;
+
+if (datafechamento is null) then
+	insert into recebimentos values (null, curdate(), valorpassagem,  forma, caixa, passagem);
+    select 'O recebimento foi criado com sucesso!' as Confirmacao;
+else
+	select 'O caixa informado está fechado! Verifique!' as Alerta;
+end if;
+end;
+$$ delimiter ;
+
+call inserirRecebimento (1, 1, 'Dinheiro');
